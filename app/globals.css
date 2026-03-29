@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.tiptap {
+  min-height: 220px;
+  outline: none;
+}
+
+.tiptap p {
+  margin: 0.5rem 0;
+}

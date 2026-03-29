@@ -1,0 +1,35 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run CRUD smoke test",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"./node_modules/tsx/dist/cli.mjs",
+				"scripts/test-crud.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Run CRUD smoke test",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"./node_modules/tsx/dist/cli.mjs",
+				"scripts/test-crud.ts"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "Build Next app",
+			"type": "shell",
+			"command": "node",
+			"args": [
+				"./node_modules/next/dist/bin/next",
+				"build"
+			],
+			"isBackground": false
+		}
+	]
+}
