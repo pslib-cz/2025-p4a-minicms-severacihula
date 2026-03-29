@@ -37,6 +37,15 @@ const resolveCardImageUrl = (value?: string | null): string => {
   return PLACEHOLDER_IMAGE_URL;
 };
 
+const readMainImageUrl = (value: unknown): string | null => {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const candidate = (value as { mainImageUrl?: unknown }).mainImageUrl;
+  return typeof candidate === "string" ? candidate : null;
+};
+
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { tag } = await searchParams;
   const hasDatabaseUrl = hasValidDatabaseUrl();
@@ -126,7 +135,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <div className="relative h-40 w-full overflow-hidden rounded-xl">
                 <Image
                   alt={`Nahled cesty: ${trip.title}`}
-                  src={resolveCardImageUrl(trip.mainImageUrl)}
+                  src={resolveCardImageUrl(readMainImageUrl(trip))}
                   fill
                   unoptimized
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

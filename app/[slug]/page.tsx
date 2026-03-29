@@ -34,6 +34,29 @@ const resolveImageUrl = (value?: string | null): string => {
   return PLACEHOLDER_IMAGE_URL;
 };
 
+const readMainImageUrl = (value: unknown): string | null => {
+  if (typeof value !== "object" || value === null) {
+    return null;
+  }
+
+  const candidate = (value as { mainImageUrl?: unknown }).mainImageUrl;
+  return typeof candidate === "string" ? candidate : null;
+};
+
+const readGalleryImageUrls = (value: unknown): string[] => {
+  if (typeof value !== "object" || value === null) {
+    return [];
+  }
+
+  const candidate = (value as { galleryImageUrls?: unknown }).galleryImageUrls;
+
+  if (!Array.isArray(candidate)) {
+    return [];
+  }
+
+  return candidate.filter((item): item is string => typeof item === "string");
+};
+
 const hasDatabaseUrl = () => {
   const databaseUrl = process.env.DATABASE_URL;
   return Boolean(databaseUrl && /^(postgresql|postgres):\/\//.test(databaseUrl));
@@ -68,7 +91,7 @@ export async function generateMetadata({ params }: TripDetailPageProps): Promise
 
   const { slug } = await params;
 
-  let trip: { title: string; description: string; slug: string; mainImageUrl: string | null } | null = null;
+  let trip = null;
 
   try {
     trip = await prisma.trip.findFirst({
@@ -106,7 +129,7 @@ export async function generateMetadata({ params }: TripDetailPageProps): Promise
       url,
       images: [
         {
-          url: resolveImageUrl(trip.mainImageUrl),
+          url: resolveImageUrl(readMainImageUrl(trip)),
           width: 1600,
           height: 900,
           alt: `Nahled clanku ${trip.title}`,
@@ -123,16 +146,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
 
   const { slug } = await params;
 
-  let trip: {
-    title: string;
-    publishDate: Date;
-    description: string;
-    content: string;
-    mainImageUrl: string | null;
-    galleryImageUrls: string[];
-    author: { name: string | null };
-    tags: Array<{ id: string; name: string }>;
-  } | null = null;
+  let trip = null;
 
   try {
     trip = await prisma.trip.findFirst({
@@ -150,7 +164,8 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
     notFound();
   }
 
-  const heroImage = resolveImageUrl(trip.mainImageUrl);
+  const heroImage = resolveImageUrl(readMainImageUrl(trip));
+  const galleryImageUrls = readGalleryImageUrls(trip);
 
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
@@ -186,7 +201,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
         dangerouslySetInnerHTML={{ __html: trip.content }}
       />
 
-      <TripGalleryCarousel images={trip.galleryImageUrls} tripTitle={trip.title} />
+      <TripGalleryCarousel images={galleryImageUrls} tripTitle={trip.title} />
     </main>
   );
 }
