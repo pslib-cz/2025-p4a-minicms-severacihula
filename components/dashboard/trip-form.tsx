@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardHeader,
   Input,
   Select,
   SelectItem,
@@ -22,7 +23,6 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { createTripSchema } from "@/lib/validations/trip";
 import { RichTextEditor } from "@/components/dashboard/rich-text-editor";
 
 type Tag = {
@@ -39,10 +39,18 @@ type Trip = {
   content: string;
   publishDate: string;
   published: boolean;
+  mainImageUrl: string | null;
+  galleryImageUrls: string[];
   tags: Tag[];
 };
 
-const tripFormSchema = createTripSchema.extend({
+const tripFormSchema = z.object({
+  title: z.string().min(1),
+  slug: z.string().min(1),
+  description: z.string().min(1),
+  content: z.string().min(1),
+  mainImageUrl: z.string().optional(),
+  galleryImageUrls: z.array(z.string()),
   publishDate: z.string().min(1),
   published: z.boolean(),
   tagIds: z.array(z.string()),
@@ -82,6 +90,19 @@ const fetchJson = async <T,>(input: RequestInfo, init?: RequestInit) => {
   return (await response.json()) as T;
 };
 
+const isValidHttpUrl = (value?: string | null) => {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 export function TripForm({ mode, tripId }: TripFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -111,6 +132,8 @@ export function TripForm({ mode, tripId }: TripFormProps) {
       slug: "",
       description: "",
       content: "",
+      mainImageUrl: "",
+      galleryImageUrls: [],
       publishDate: "",
       published: false,
       tagIds: [],
@@ -123,6 +146,8 @@ export function TripForm({ mode, tripId }: TripFormProps) {
       setValue("slug", tripQuery.data.slug);
       setValue("description", tripQuery.data.description);
       setValue("content", tripQuery.data.content);
+      setValue("mainImageUrl", tripQuery.data.mainImageUrl ?? "");
+      setValue("galleryImageUrls", tripQuery.data.galleryImageUrls ?? []);
       setValue("publishDate", toLocalDateTimeInputValue(tripQuery.data.publishDate));
       setValue("published", tripQuery.data.published);
       setValue(
@@ -134,6 +159,8 @@ export function TripForm({ mode, tripId }: TripFormProps) {
 
   const titleValue = watch("title");
   const slugValue = watch("slug");
+  const mainImageUrlValue = watch("mainImageUrl");
+  const galleryImageUrlsValue = watch("galleryImageUrls");
 
   useEffect(() => {
     if (!slugValue) {
@@ -143,8 +170,11 @@ export function TripForm({ mode, tripId }: TripFormProps) {
 
   const saveMutation = useMutation({
     mutationFn: async (values: FormValues) => {
+      const cleanedGallery = values.galleryImageUrls.filter((item) => item.trim().length > 0);
       const payload = {
         ...values,
+        mainImageUrl: values.mainImageUrl || undefined,
+        galleryImageUrls: cleanedGallery,
         publishDate: new Date(values.publishDate),
       };
 
@@ -211,6 +241,90 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             isInvalid={Boolean(errors.description)}
             errorMessage={errors.description?.message}
           />
+
+          <Input
+            label="Main image URL"
+            placeholder="https://images.example.com/hero.jpg"
+            {...register("mainImageUrl")}
+            isInvalid={Boolean(errors.mainImageUrl)}
+            errorMessage={errors.mainImageUrl?.message}
+          />
+
+          {isValidHttpUrl(mainImageUrlValue) ? (
+            <Card shadow="sm">
+              <CardHeader className="pb-0 text-sm text-slate-600">Nahled hlavniho obrazku</CardHeader>
+              <CardBody>
+                <img
+                  src={mainImageUrlValue}
+                  alt="Nahled hlavniho obrazku"
+                  className="h-44 w-full rounded-lg object-cover"
+                />
+              </CardBody>
+            </Card>
+          ) : null}
+
+          <Card shadow="sm">
+            <CardHeader className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium">Galerie obrazku</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="flat"
+                onClick={() =>
+                  setValue("galleryImageUrls", [...(galleryImageUrlsValue ?? []), ""], {
+                    shouldDirty: true,
+                  })
+                }
+              >
+                Pridat URL
+              </Button>
+            </CardHeader>
+            <CardBody className="space-y-3">
+              {(galleryImageUrlsValue ?? []).length === 0 ? (
+                <p className="text-sm text-slate-500">Zatim zadny obrazek v galerii.</p>
+              ) : null}
+
+              {(galleryImageUrlsValue ?? []).map((_, index) => {
+                const galleryUrl = galleryImageUrlsValue?.[index];
+
+                return (
+                  <div key={index} className="space-y-2 rounded-lg border border-slate-200 p-3">
+                    <div className="flex gap-2">
+                      <Input
+                        label={`Galerie URL #${index + 1}`}
+                        placeholder="https://images.example.com/gallery-1.jpg"
+                        {...register(`galleryImageUrls.${index}` as const)}
+                        isInvalid={Boolean(errors.galleryImageUrls?.[index])}
+                        errorMessage={errors.galleryImageUrls?.[index]?.message}
+                      />
+                      <Button
+                        type="button"
+                        color="danger"
+                        variant="flat"
+                        className="mt-6"
+                        onClick={() => {
+                          const nextValues = (galleryImageUrlsValue ?? []).filter(
+                            (_, itemIndex) => itemIndex !== index,
+                          );
+                          setValue("galleryImageUrls", nextValues, { shouldDirty: true });
+                        }}
+                      >
+                        Odebrat
+                      </Button>
+                    </div>
+
+                    {isValidHttpUrl(galleryUrl) ? (
+                      <img
+                        src={galleryUrl}
+                        alt={`Nahled galerie ${index + 1}`}
+                        className="h-32 w-full rounded-lg object-cover"
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
+            </CardBody>
+          </Card>
 
           <Controller
             control={control}

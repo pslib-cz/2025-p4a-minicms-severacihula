@@ -63,6 +63,8 @@ model Trip {
   slug        String   @unique
   content     String
   description String
+  mainImageUrl String?
+  galleryImageUrls String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   publishDate DateTime

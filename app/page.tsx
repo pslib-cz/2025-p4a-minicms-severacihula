@@ -8,9 +8,33 @@ type HomePageProps = {
   searchParams: Promise<{ tag?: string }>;
 };
 
+const PLACEHOLDER_IMAGE_URL =
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80";
+
 const hasValidDatabaseUrl = () => {
   const databaseUrl = process.env.DATABASE_URL;
   return Boolean(databaseUrl && /^(postgresql|postgres):\/\//.test(databaseUrl));
+};
+
+const isValidImageUrl = (value?: string | null) => {
+  if (!value) {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
+const resolveCardImageUrl = (value?: string | null): string => {
+  if (value && isValidImageUrl(value)) {
+    return value;
+  }
+
+  return PLACEHOLDER_IMAGE_URL;
 };
 
 export default async function HomePage({ searchParams }: HomePageProps) {
@@ -102,8 +126,9 @@ export default async function HomePage({ searchParams }: HomePageProps) {
               <div className="relative h-40 w-full overflow-hidden rounded-xl">
                 <Image
                   alt={`Nahled cesty: ${trip.title}`}
-                  src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80"
+                  src={resolveCardImageUrl(trip.mainImageUrl)}
                   fill
+                  unoptimized
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover"
                   priority={false}
