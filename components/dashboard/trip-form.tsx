@@ -42,15 +42,13 @@ type Trip = {
   tags: Tag[];
 };
 
-type FormValues = {
-  title: string;
-  slug: string;
-  description: string;
-  content: string;
-  publishDate: string;
-  published: boolean;
-  tagIds: string[];
-};
+const tripFormSchema = createTripSchema.extend({
+  publishDate: z.string().min(1),
+  published: z.boolean(),
+  tagIds: z.array(z.string()),
+});
+
+type FormValues = z.infer<typeof tripFormSchema>;
 
 type TripFormProps = {
   mode: "create" | "edit";
@@ -107,11 +105,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(
-      createTripSchema.extend({
-        publishDate: z.string().min(1),
-      }),
-    ),
+    resolver: zodResolver(tripFormSchema),
     defaultValues: {
       title: "",
       slug: "",

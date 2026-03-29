@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "cookie-consent-choice";
@@ -28,7 +28,17 @@ export function CookieConsentBanner() {
 
   return (
     <>
-      {isReady && choice === "accepted" && gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+      {isReady && choice === "accepted" && gaId ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${gaId}');`}
+          </Script>
+        </>
+      ) : null}
 
       {isReady && choice === null ? (
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-300 bg-white/95 p-4 shadow-lg backdrop-blur">
