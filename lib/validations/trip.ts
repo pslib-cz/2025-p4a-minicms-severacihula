@@ -15,9 +15,9 @@ export const createTripSchema = z.object({
   description: z.string().trim().min(1, { message: "Toto pole je povinne" }),
   mainImageUrl: optionalImageUrl,
   galleryImageUrls: z.array(z.string().trim().url()).optional().default([]),
+  tags: z.array(z.string().trim().min(1)).optional().default([]),
   publishDate: z.coerce.date(),
   published: z.boolean().default(false),
-  tagIds: z.array(z.string()).optional().default([]),
 });
 
 export const updateTripSchema = createTripSchema.partial();

@@ -4,6 +4,36 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { updateTripSchema } from "@/lib/validations/trip";
 
+const toTagSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
+const normalizeTags = (tags: string[]) => {
+  const unique = new Map<string, { name: string; slug: string }>();
+
+  for (const rawTag of tags) {
+    const name = rawTag.trim();
+    if (!name) {
+      continue;
+    }
+
+    const slug = toTagSlug(name);
+    if (!slug || unique.has(slug)) {
+      continue;
+    }
+
+    unique.set(slug, { name, slug });
+  }
+
+  return Array.from(unique.values());
+};
+
 type Params = {
   params: Promise<{ id: string }>;
 };
@@ -58,12 +88,20 @@ async function updateTrip(req: Request, { params }: Params) {
     );
   }
 
-  const {
-    tagIds,
-    mainImageUrl,
-    galleryImageUrls,
-    ...tripData
-  } = parsed.data;
+  const { tags, mainImageUrl, galleryImageUrls, ...tripData } = parsed.data;
+
+  const normalizedTags = tags ? normalizeTags(tags) : undefined;
+  const connectedTags = normalizedTags
+    ? await Promise.all(
+        normalizedTags.map((tag) =>
+          prisma.tag.upsert({
+            where: { slug: tag.slug },
+            update: { name: tag.name },
+            create: { name: tag.name, slug: tag.slug },
+          }),
+        ),
+      )
+    : undefined;
 
   const updatedTrip = await prisma.trip.update({
     where: { id },
@@ -71,10 +109,10 @@ async function updateTrip(req: Request, { params }: Params) {
       ...tripData,
       ...(mainImageUrl !== undefined ? { mainImageUrl } : {}),
       ...(galleryImageUrls !== undefined ? { galleryImageUrls } : {}),
-      ...(tagIds
+      ...(connectedTags
         ? {
             tags: {
-              set: tagIds.map((tagId) => ({ id: tagId })),
+              set: connectedTags.map((tag) => ({ id: tag.id })),
             },
           }
         : {}),

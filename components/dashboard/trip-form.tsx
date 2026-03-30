@@ -6,8 +6,6 @@ import {
   CardBody,
   CardHeader,
   Input,
-  Select,
-  SelectItem,
   Switch,
   Textarea,
 } from "@nextui-org/react";
@@ -19,7 +17,7 @@ import {
 } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -52,9 +50,9 @@ const tripFormSchema = z.object({
   content: z.string().min(1, { message: "Toto pole je povinne" }),
   mainImageUrl: z.string().optional(),
   galleryImageUrls: z.array(z.string()),
+  tags: z.array(z.string()),
   publishDate: z.string().min(1, { message: "Toto pole je povinne" }),
   published: z.boolean(),
-  tagIds: z.array(z.string()),
 });
 
 type FormValues = z.infer<typeof tripFormSchema>;
@@ -107,16 +105,13 @@ const isValidHttpUrl = (value?: string | null) => {
 export function TripForm({ mode, tripId }: TripFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [mainImagePreviewUrl, setMainImagePreviewUrl] = useState<string | null>(null);
   const [galleryPreviewUrls, setGalleryPreviewUrls] = useState<string[]>([]);
   const [urlsToDelete, setUrlsToDelete] = useState<string[]>([]);
-
-  const tagsQuery = useQuery({
-    queryKey: ["tags"],
-    queryFn: () => fetchJson<Tag[]>("/api/tags"),
-  });
 
   const tripQuery = useQuery({
     queryKey: ["trip", tripId],
@@ -141,9 +136,9 @@ export function TripForm({ mode, tripId }: TripFormProps) {
       content: "",
       mainImageUrl: "",
       galleryImageUrls: [],
+      tags: [],
       publishDate: "",
       published: false,
-      tagIds: [],
     },
   });
 
@@ -156,10 +151,12 @@ export function TripForm({ mode, tripId }: TripFormProps) {
         content: tripQuery.data.content,
         mainImageUrl: tripQuery.data.mainImageUrl ?? "",
         galleryImageUrls: tripQuery.data.galleryImageUrls ?? [],
+        tags: tripQuery.data.tags.map((tag) => tag.name),
         publishDate: toLocalDateTimeInputValue(tripQuery.data.publishDate),
         published: tripQuery.data.published,
-        tagIds: tripQuery.data.tags.map((tag) => tag.id),
       });
+      setTags(tripQuery.data.tags.map((tag) => tag.name));
+      setTagInput("");
       setMainImageFile(null);
       setGalleryFiles([]);
       setUrlsToDelete([]);
@@ -199,6 +196,13 @@ export function TripForm({ mode, tripId }: TripFormProps) {
   const mainImageUrlValue = watch("mainImageUrl");
   const galleryImageUrlsValue = watch("galleryImageUrls");
 
+  useEffect(() => {
+    setValue("tags", tags, {
+      shouldValidate: true,
+      shouldDirty: false,
+    });
+  }, [tags, setValue]);
+
   const addUrlToDeleteQueue = (url?: string | null) => {
     if (!url) {
       return;
@@ -216,11 +220,38 @@ export function TripForm({ mode, tripId }: TripFormProps) {
     }
   }, [mode, titleValue, slugValue, setValue]);
 
+  const addTag = (rawTag: string) => {
+    const normalizedTag = rawTag.trim();
+    if (!normalizedTag) {
+      return;
+    }
+
+    setTags((prev) => {
+      const exists = prev.some((tag) => tag.toLowerCase() === normalizedTag.toLowerCase());
+      return exists ? prev : [...prev, normalizedTag];
+    });
+    setTagInput("");
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleTagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault();
+      addTag(tagInput);
+    }
+  };
+
   const saveMutation = useMutation({
     mutationFn: async (values: FormValues) => {
       let nextUrlsToDelete = [...urlsToDelete];
       let nextMainImageUrl = values.mainImageUrl;
       let nextGalleryImageUrls = values.galleryImageUrls.filter((item) => item.trim().length > 0);
+      const nextTags = tags
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
 
       if (mainImageFile) {
         if (values.mainImageUrl) {
@@ -248,6 +279,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
         ...values,
         mainImageUrl: nextMainImageUrl || undefined,
         galleryImageUrls: nextGalleryImageUrls,
+        tags: nextTags,
         publishDate: new Date(values.publishDate),
       };
 
@@ -342,6 +374,37 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             isInvalid={Boolean(errors.description)}
             errorMessage={errors.description?.message}
           />
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">Tagy / kategorie</label>
+            <Input
+              value={tagInput}
+              onValueChange={setTagInput}
+              onKeyDown={handleTagInputKeyDown}
+              placeholder="Napis tag a stiskni Enter nebo ,"
+              description="Tag se prida po stisku Enter nebo carky."
+            />
+            {tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="rounded px-1 text-slate-600 hover:bg-slate-300 hover:text-slate-900"
+                      aria-label={`Odstranit tag ${tag}`}
+                    >
+                      X
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
           <div className="space-y-2">
             <p className="text-sm font-medium">Hlavni obrazek</p>
@@ -488,28 +551,6 @@ export function TripForm({ mode, tripId }: TripFormProps) {
               <Switch isSelected={field.value} onValueChange={field.onChange}>
                 Publikovano
               </Switch>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="tagIds"
-            render={({ field }) => (
-              <Select
-                label="Tags"
-                selectionMode="multiple"
-                selectedKeys={new Set(field.value)}
-                onSelectionChange={(keys) => {
-                  field.onChange(Array.from(keys).map(String));
-                }}
-                isLoading={tagsQuery.isLoading}
-                isInvalid={Boolean(errors.tagIds)}
-                errorMessage={errors.tagIds?.message as string | undefined}
-              >
-                {(tagsQuery.data ?? []).map((tag) => (
-                  <SelectItem key={tag.id}>{tag.name}</SelectItem>
-                ))}
-              </Select>
             )}
           />
 

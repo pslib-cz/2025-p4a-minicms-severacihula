@@ -140,7 +140,7 @@ async function run() {
     }
 
     const tagsResponse = await request(authJar, "/api/tags");
-    const tags = (await tagsResponse.json()) as Array<{ id: string }>;
+    const tags = (await tagsResponse.json()) as Array<{ name: string }>;
 
     if (!tags.length) {
       throw new Error("No tags available for test payload.");
@@ -155,7 +155,7 @@ async function run() {
       description: "Smoke test description",
       publishDate: new Date().toISOString(),
       published: false,
-      tagIds: [tags[0].id],
+      tags: [tags[0].name],
     };
 
     const createResponse = await request(authJar, "/api/trips", {
