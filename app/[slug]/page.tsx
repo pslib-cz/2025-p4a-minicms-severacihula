@@ -1,6 +1,8 @@
 import { Chip } from "@nextui-org/react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { GalleryLightbox } from "@/components/public/gallery-lightbox";
 import { prisma } from "@/lib/prisma";
 
 type TripDetailPageProps = {
@@ -170,6 +172,12 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <header className="space-y-3">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
+        >
+          &larr; Zpet na Dashboard
+        </Link>
         <h1 className="text-3xl font-bold">{trip.title}</h1>
         <p className="text-sm text-slate-500">
           {new Date(trip.publishDate).toLocaleDateString("cs-CZ")} · {trip.author.name ?? "Neznamy autor"}
@@ -199,21 +207,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
         dangerouslySetInnerHTML={{ __html: trip.content }}
       />
 
-      {galleryImageUrls.length > 0 ? (
-        <section className="space-y-3">
-          <h2 className="text-2xl font-semibold">Galerie</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {galleryImageUrls.map((imageUrl, index) => (
-              <img
-                key={`${imageUrl}-${index}`}
-                src={imageUrl}
-                alt={`${trip.title} - galerie ${index + 1}`}
-                className="h-56 w-full rounded-xl object-cover"
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <GalleryLightbox images={galleryImageUrls} title={`Galerie - ${trip.title}`} />
     </main>
   );
 }
