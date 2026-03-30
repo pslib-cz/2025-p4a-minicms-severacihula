@@ -9,6 +9,8 @@ type TripDetailPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 const resolveBaseUrl = () => process.env.NEXTAUTH_URL ?? "http://localhost:3000";
 
 const isValidImageUrl = (value?: string | null) => {

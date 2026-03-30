@@ -35,11 +35,18 @@ export async function POST(req: Request) {
     );
   }
 
-  const { tagIds, ...tripData } = parsed.data;
+  const {
+    tagIds,
+    mainImageUrl,
+    galleryImageUrls,
+    ...tripData
+  } = parsed.data;
 
   const trip = await prisma.trip.create({
     data: {
       ...tripData,
+      mainImageUrl,
+      galleryImageUrls,
       userId: session.user.id,
       tags: {
         connect: tagIds.map((id) => ({ id })),

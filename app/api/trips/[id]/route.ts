@@ -58,12 +58,19 @@ async function updateTrip(req: Request, { params }: Params) {
     );
   }
 
-  const { tagIds, ...tripData } = parsed.data;
+  const {
+    tagIds,
+    mainImageUrl,
+    galleryImageUrls,
+    ...tripData
+  } = parsed.data;
 
   const updatedTrip = await prisma.trip.update({
     where: { id },
     data: {
       ...tripData,
+      ...(mainImageUrl !== undefined ? { mainImageUrl } : {}),
+      ...(galleryImageUrls !== undefined ? { galleryImageUrls } : {}),
       ...(tagIds
         ? {
             tags: {
