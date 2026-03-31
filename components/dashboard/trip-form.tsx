@@ -5,9 +5,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Input,
-  Switch,
-  Textarea,
 } from "@nextui-org/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -105,19 +102,8 @@ const isValidHttpUrl = (value?: string | null) => {
   }
 };
 
-const inputClassNames = {
-  inputWrapper:
-    "rounded-lg border border-gray-200 bg-white shadow-none transition-all duration-200 ease-in-out group-data-[focus=true]:border-transparent group-data-[focus=true]:ring-2 group-data-[focus=true]:ring-blue-600",
-  input: "text-slate-900 placeholder:text-slate-400",
-  label: "text-slate-700",
-};
-
-const textareaClassNames = {
-  inputWrapper:
-    "rounded-lg border border-gray-200 bg-white shadow-none transition-all duration-200 ease-in-out group-data-[focus=true]:border-transparent group-data-[focus=true]:ring-2 group-data-[focus=true]:ring-blue-600",
-  input: "text-slate-900 placeholder:text-slate-400",
-  label: "text-slate-700",
-};
+const baseFieldClass =
+  "w-full rounded-lg border border-gray-300 px-4 py-2.5 text-slate-900 outline-none transition-all duration-200 ease-in-out focus:ring-2 focus:ring-blue-600";
 
 export function TripForm({ mode, tripId }: TripFormProps) {
   const router = useRouter();
@@ -366,55 +352,69 @@ export function TripForm({ mode, tripId }: TripFormProps) {
   return (
     <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <CardBody className="p-6 md:p-8">
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            label="Název"
-            placeholder="Název cesty"
-            classNames={inputClassNames}
-            {...register("title")}
-            isInvalid={Boolean(errors.title)}
-            errorMessage={errors.title?.message}
-          />
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="title" className="text-sm font-semibold text-slate-700">
+              Název
+            </label>
+            <input
+              id="title"
+              placeholder="Název cesty"
+              className={baseFieldClass}
+              {...register("title")}
+            />
+            {errors.title?.message ? (
+              <p className="text-xs text-danger">{errors.title.message}</p>
+            ) : null}
+          </div>
 
-          <Controller
-            control={control}
-            name="slug"
-            render={({ field }) => (
-              <Input
-                {...field}
-                label="URL adresa (slug)"
-                placeholder="napr-vikend-ve-stockholmu"
-                description="Bude použito v adrese: /vikend-ve-stockholmu. Pokud nevyplníte, vygeneruje se automaticky z názvu."
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-                onBlur={field.onBlur}
-                name={field.name}
-                classNames={inputClassNames}
-                isInvalid={Boolean(errors.slug)}
-                errorMessage={errors.slug?.message}
-              />
-            )}
-          />
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="slug" className="text-sm font-semibold text-slate-700">
+              URL adresa (slug)
+            </label>
+            <input
+              id="slug"
+              placeholder="napr-vikend-ve-stockholmu"
+              className={baseFieldClass}
+              {...register("slug")}
+            />
+            <p className="text-xs text-slate-500">
+              Bude použito v adrese: /vikend-ve-stockholmu. Pokud nevyplníte, vygeneruje se automaticky z názvu.
+            </p>
+            {errors.slug?.message ? (
+              <p className="text-xs text-danger">{errors.slug.message}</p>
+            ) : null}
+          </div>
 
-          <Textarea
-            label="Popis"
-            placeholder="Krátký perex"
-            classNames={textareaClassNames}
-            {...register("description")}
-            isInvalid={Boolean(errors.description)}
-            errorMessage={errors.description?.message}
-          />
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="description" className="text-sm font-semibold text-slate-700">
+              Popis
+            </label>
+            <textarea
+              id="description"
+              placeholder="Krátký perex"
+              className={baseFieldClass}
+              rows={4}
+              {...register("description")}
+            />
+            {errors.description?.message ? (
+              <p className="text-xs text-danger">{errors.description.message}</p>
+            ) : null}
+          </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-900">Tagy / kategorie</label>
-            <Input
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="tag-input" className="text-sm font-semibold text-slate-700">
+              Tagy / kategorie
+            </label>
+            <input
+              id="tag-input"
               value={tagInput}
-              onValueChange={setTagInput}
+              onChange={(event) => setTagInput(event.target.value)}
               onKeyDown={handleTagInputKeyDown}
               placeholder="Napiš tag a stiskni Enter nebo ,"
-              description="Tag se přidá po stisku Enter nebo čárky."
-              classNames={inputClassNames}
+              className={baseFieldClass}
             />
+            <p className="text-xs text-slate-500">Tag se přidá po stisku Enter nebo čárky.</p>
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
@@ -557,34 +557,42 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             control={control}
             name="content"
             render={({ field }) => (
-              <div>
-                <p className="mb-2 text-sm font-medium text-slate-900">Obsah</p>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-slate-700">Obsah</label>
                 <RichTextEditor value={field.value} onChange={field.onChange} />
                 {errors.content?.message ? (
-                  <p className="mt-2 text-xs text-danger">{errors.content.message}</p>
+                  <p className="text-xs text-danger">{errors.content.message}</p>
                 ) : null}
               </div>
             )}
           />
 
-          <Input
-            label="Datum publikace"
-            type="datetime-local"
-            classNames={inputClassNames}
-            {...register("publishDate")}
-            isInvalid={Boolean(errors.publishDate)}
-            errorMessage={errors.publishDate?.message}
-          />
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="publishDate" className="text-sm font-semibold text-slate-700">
+              Datum publikace
+            </label>
+            <input
+              id="publishDate"
+              type="datetime-local"
+              className={baseFieldClass}
+              {...register("publishDate")}
+            />
+            {errors.publishDate?.message ? (
+              <p className="text-xs text-danger">{errors.publishDate.message}</p>
+            ) : null}
+          </div>
 
-          <Controller
-            control={control}
-            name="published"
-            render={({ field }) => (
-              <Switch isSelected={field.value} onValueChange={field.onChange}>
-                Publikováno
-              </Switch>
-            )}
-          />
+          <div className="flex items-center gap-3">
+            <input
+              id="published"
+              type="checkbox"
+              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+              {...register("published")}
+            />
+            <label htmlFor="published" className="text-sm font-semibold text-slate-700">
+              Publikováno
+            </label>
+          </div>
 
           <div className="flex gap-3">
             <Button
