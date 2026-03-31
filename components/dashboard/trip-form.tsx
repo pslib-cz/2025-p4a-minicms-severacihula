@@ -105,6 +105,20 @@ const isValidHttpUrl = (value?: string | null) => {
   }
 };
 
+const inputClassNames = {
+  inputWrapper:
+    "rounded-lg border border-gray-200 bg-white shadow-none transition-all duration-200 ease-in-out group-data-[focus=true]:border-transparent group-data-[focus=true]:ring-2 group-data-[focus=true]:ring-blue-600",
+  input: "text-slate-900 placeholder:text-slate-400",
+  label: "text-slate-700",
+};
+
+const textareaClassNames = {
+  inputWrapper:
+    "rounded-lg border border-gray-200 bg-white shadow-none transition-all duration-200 ease-in-out group-data-[focus=true]:border-transparent group-data-[focus=true]:ring-2 group-data-[focus=true]:ring-blue-600",
+  input: "text-slate-900 placeholder:text-slate-400",
+  label: "text-slate-700",
+};
+
 export function TripForm({ mode, tripId }: TripFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -356,6 +370,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           <Input
             label="Název"
             placeholder="Název cesty"
+            classNames={inputClassNames}
             {...register("title")}
             isInvalid={Boolean(errors.title)}
             errorMessage={errors.title?.message}
@@ -374,6 +389,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                 onValueChange={field.onChange}
                 onBlur={field.onBlur}
                 name={field.name}
+                classNames={inputClassNames}
                 isInvalid={Boolean(errors.slug)}
                 errorMessage={errors.slug?.message}
               />
@@ -383,6 +399,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           <Textarea
             label="Popis"
             placeholder="Krátký perex"
+            classNames={textareaClassNames}
             {...register("description")}
             isInvalid={Boolean(errors.description)}
             errorMessage={errors.description?.message}
@@ -396,6 +413,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
               onKeyDown={handleTagInputKeyDown}
               placeholder="Napiš tag a stiskni Enter nebo ,"
               description="Tag se přidá po stisku Enter nebo čárky."
+              classNames={inputClassNames}
             />
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -489,7 +507,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                         <img
                           src={galleryUrl}
                           alt={`Uložená galerie ${index + 1}`}
-                          className="h-28 w-full rounded-lg object-cover"
+                          className="h-28 w-full rounded-xl object-cover transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-lg"
                         />
                         <Button
                           type="button"
@@ -526,7 +544,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                         key={`${previewUrl}-${index}`}
                         src={previewUrl}
                         alt={`Náhled galerie ${index + 1}`}
-                        className="h-28 w-full rounded-lg object-cover"
+                        className="h-28 w-full rounded-xl object-cover transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-lg"
                       />
                     ))}
                   </div>
@@ -552,6 +570,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           <Input
             label="Datum publikace"
             type="datetime-local"
+            classNames={inputClassNames}
             {...register("publishDate")}
             isInvalid={Boolean(errors.publishDate)}
             errorMessage={errors.publishDate?.message}
@@ -571,7 +590,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             <Button
               color="primary"
               type="submit"
-              className="bg-blue-600 text-white transition-all duration-200 ease-in-out hover:bg-blue-700"
+              className="rounded-lg bg-blue-600 text-white shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-md"
               isLoading={isSubmitting || saveMutation.isPending}
             >
               Uložit
@@ -580,7 +599,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
               as={Link}
               href="/dashboard/trips"
               variant="flat"
-              className="border border-gray-200 bg-white text-slate-700 transition-all duration-200 ease-in-out hover:bg-slate-50"
+              className="rounded-lg border border-gray-200 bg-white text-slate-700 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-slate-50"
             >
               Zrušit
             </Button>

@@ -11,7 +11,7 @@ export default function DashboardTripsPage() {
           as={Link}
           href="/dashboard/trips/new"
           color="primary"
-          className="bg-blue-600 text-white transition-all duration-200 ease-in-out hover:bg-blue-700"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-white shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-md"
         >
           Přidat novou cestu
         </Button>
