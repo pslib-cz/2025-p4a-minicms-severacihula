@@ -36,9 +36,6 @@ export default function LoginPage() {
     <main className="mx-auto flex min-h-screen max-w-md items-center px-6">
       <form className="w-full space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" onSubmit={handleSubmit}>
         <h1 className="text-2xl font-semibold text-slate-900">Přihlášení</h1>
-        <p className="text-sm text-slate-600">
-          Testovací účet: anna@example.com / test1234
-        </p>
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="email">
