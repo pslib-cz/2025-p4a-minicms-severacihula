@@ -2,6 +2,7 @@ import { Card, CardBody, CardHeader, Chip } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Prisma } from "@prisma/client";
+import { TagFilter } from "@/components/public/tag-filter";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -104,26 +105,8 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         </p>
       </section>
 
-      <section className="flex flex-wrap gap-2">
-        <Chip
-          as={Link}
-          href="/"
-          color={!tag ? "primary" : "default"}
-          variant={!tag ? "solid" : "flat"}
-        >
-          Vse
-        </Chip>
-        {tags.map((item) => (
-          <Chip
-            as={Link}
-            key={item.id}
-            href={`/?tag=${encodeURIComponent(item.slug)}`}
-            color={tag === item.slug ? "primary" : "default"}
-            variant={tag === item.slug ? "solid" : "flat"}
-          >
-            {item.name}
-          </Chip>
-        ))}
+      <section>
+        <TagFilter tags={tags} activeTag={tag} />
       </section>
 
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
