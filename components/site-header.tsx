@@ -5,7 +5,11 @@ import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const linkClass = (isActive: boolean) =>
-  `text-sm font-medium transition-colors ${isActive ? "text-slate-900" : "text-slate-600 hover:text-slate-900"}`;
+  `rounded-md px-2.5 py-1.5 text-sm font-medium transition-all duration-200 ease-in-out ${
+    isActive
+      ? "bg-blue-50 text-blue-700"
+      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+  }`;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -14,15 +18,15 @@ export function SiteHeader() {
   const isAuthenticated = status === "authenticated";
 
   return (
-    <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-lg">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-base font-semibold text-slate-900">
-          Cestovatelsky denik
+        <Link href="/" className="text-base font-semibold tracking-tight text-slate-900 transition-colors hover:text-blue-700">
+          Cestovatelský deník
         </Link>
 
         <div className="flex items-center gap-4">
           <Link href="/" className={linkClass(pathname === "/")}>
-            Clanky
+            Články
           </Link>
 
           {isAuthenticated ? (
@@ -31,22 +35,22 @@ export function SiteHeader() {
                 Dashboard
               </Link>
               <Link href="/dashboard/trips/new" className={linkClass(pathname === "/dashboard/trips/new")}>
-                Pridat clanek
+                Přidat článek
               </Link>
               <button
                 type="button"
-                className="rounded border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-100"
+                className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-slate-50 hover:text-slate-900"
                 onClick={() => signOut({ callbackUrl: "/login" })}
               >
-                Odhlasit se
+                Odhlásit se
               </button>
             </>
           ) : (
             <Link
               href="/login"
-              className="rounded border border-slate-300 px-3 py-1.5 text-sm text-slate-700 transition-colors hover:bg-slate-100"
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-md"
             >
-              Prihlasit se
+              Přihlásit se
             </Link>
           )}
         </div>

@@ -44,14 +44,14 @@ type Trip = {
 };
 
 const tripFormSchema = z.object({
-  title: z.string().trim().min(1, { message: "Toto pole je povinne" }),
-  slug: z.string().trim().min(1, { message: "Toto pole je povinne" }),
-  description: z.string().trim().min(1, { message: "Toto pole je povinne" }),
-  content: z.string().min(1, { message: "Toto pole je povinne" }),
+  title: z.string().trim().min(1, { message: "Toto pole je povinné" }),
+  slug: z.string().trim().min(1, { message: "Toto pole je povinné" }),
+  description: z.string().trim().min(1, { message: "Toto pole je povinné" }),
+  content: z.string().min(1, { message: "Toto pole je povinné" }),
   mainImageUrl: z.string().optional(),
   galleryImageUrls: z.array(z.string()),
   tags: z.array(z.string()),
-  publishDate: z.string().min(1, { message: "Toto pole je povinne" }),
+  publishDate: z.string().min(1, { message: "Toto pole je povinné" }),
   published: z.boolean(),
 });
 
@@ -332,12 +332,12 @@ export function TripForm({ mode, tripId }: TripFormProps) {
       setMainImageFile(null);
       setGalleryFiles([]);
       setUrlsToDelete([]);
-      toast.success("Cesta byla uspesne ulozena.");
+      toast.success("Cesta byla úspěšně uložena.");
       router.push("/dashboard/trips");
       router.refresh();
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Nepodarilo se ulozit cestu.");
+      toast.error(error.message || "Nepodařilo se uložit cestu.");
     },
   });
 
@@ -346,16 +346,16 @@ export function TripForm({ mode, tripId }: TripFormProps) {
   };
 
   if (tripQuery.isLoading) {
-    return <p className="text-sm text-slate-600">Nacitam data cesty...</p>;
+    return <p className="text-sm text-slate-600">Načítám data cesty...</p>;
   }
 
   return (
-    <Card>
-      <CardBody>
-        <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
+    <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <CardBody className="p-6 md:p-8">
+        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <Input
-            label="Title"
-            placeholder="Nazev cesty"
+            label="Název"
+            placeholder="Název cesty"
             {...register("title")}
             isInvalid={Boolean(errors.title)}
             errorMessage={errors.title?.message}
@@ -369,7 +369,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                 {...field}
                 label="URL adresa (slug)"
                 placeholder="napr-vikend-ve-stockholmu"
-                description="Bude pouzito v adrese: /vikend-ve-stockholmu. Pokud nevyplnite, vygeneruje se automaticky z nazvu."
+                description="Bude použito v adrese: /vikend-ve-stockholmu. Pokud nevyplníte, vygeneruje se automaticky z názvu."
                 value={field.value ?? ""}
                 onValueChange={field.onChange}
                 onBlur={field.onBlur}
@@ -381,34 +381,34 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           />
 
           <Textarea
-            label="Description"
-            placeholder="Kratky perex"
+            label="Popis"
+            placeholder="Krátký perex"
             {...register("description")}
             isInvalid={Boolean(errors.description)}
             errorMessage={errors.description?.message}
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Tagy / kategorie</label>
+            <label className="block text-sm font-medium text-slate-900">Tagy / kategorie</label>
             <Input
               value={tagInput}
               onValueChange={setTagInput}
               onKeyDown={handleTagInputKeyDown}
-              placeholder="Napis tag a stiskni Enter nebo ,"
-              description="Tag se prida po stisku Enter nebo carky."
+              placeholder="Napiš tag a stiskni Enter nebo ,"
+              description="Tag se přidá po stisku Enter nebo čárky."
             />
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-2 rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700"
+                    className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-all duration-200 ease-in-out"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="rounded px-1 text-slate-600 hover:bg-slate-300 hover:text-slate-900"
+                      className="rounded px-1 text-slate-600 transition-all duration-200 ease-in-out hover:bg-slate-300 hover:text-slate-900"
                       aria-label={`Odstranit tag ${tag}`}
                     >
                       X
@@ -420,22 +420,22 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">Hlavni obrazek</p>
+            <p className="text-sm font-medium text-slate-900">Hlavní obrázek</p>
             <input
               type="file"
               accept="image/*"
               onChange={(event) => {
                 setMainImageFile(event.target.files?.[0] ?? null);
               }}
-              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+              className="block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 ease-in-out file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:ring-2 focus:ring-blue-600"
             />
-            <p className="text-xs text-slate-500">Povolene jsou pouze obrazky do velikosti 4 MB.</p>
+            <p className="text-xs text-slate-500">Povolené jsou pouze obrázky do velikosti 4 MB.</p>
           </div>
 
           {mainImagePreviewUrl || isValidHttpUrl(mainImageUrlValue) ? (
-            <Card shadow="sm">
+            <Card shadow="sm" className="rounded-xl border border-slate-200 bg-white">
               <CardHeader className="flex items-center justify-between gap-2 pb-0 text-sm text-slate-600">
-                <span>Nahled hlavniho obrazku</span>
+                <span>Náhled hlavního obrázku</span>
                 {isValidHttpUrl(mainImageUrlValue) ? (
                   <Button
                     type="button"
@@ -450,23 +450,23 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                       });
                     }}
                   >
-                    Odstranit hlavni obrazek
+                    Odstranit hlavní obrázek
                   </Button>
                 ) : null}
               </CardHeader>
               <CardBody>
                 <img
                   src={mainImagePreviewUrl ?? mainImageUrlValue}
-                  alt="Nahled hlavniho obrazku"
+                  alt="Náhled hlavního obrázku"
                   className="h-44 w-full rounded-lg object-cover"
                 />
               </CardBody>
             </Card>
           ) : null}
 
-          <Card shadow="sm">
+          <Card shadow="sm" className="rounded-xl border border-slate-200 bg-white">
             <CardHeader className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium">Galerie obrazku</span>
+              <span className="text-sm font-medium text-slate-900">Galerie obrázků</span>
             </CardHeader>
             <CardBody className="space-y-3">
               <input
@@ -476,19 +476,19 @@ export function TripForm({ mode, tripId }: TripFormProps) {
                 onChange={(event) => {
                   setGalleryFiles(Array.from(event.target.files ?? []));
                 }}
-                className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                className="block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 ease-in-out file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 focus:ring-2 focus:ring-blue-600"
               />
-              <p className="text-xs text-slate-500">Vyberte jeden nebo vice obrazku pro galerii (max 4 MB / soubor).</p>
+              <p className="text-xs text-slate-500">Vyberte jeden nebo více obrázků pro galerii (max 4 MB / soubor).</p>
 
               {(galleryImageUrlsValue ?? []).length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Aktualne ulozene obrazky</p>
+                  <p className="text-sm font-medium">Aktuálně uložené obrázky</p>
                   <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                     {galleryImageUrlsValue.map((galleryUrl, index) => (
                       <div key={`${galleryUrl}-${index}`} className="relative">
                         <img
                           src={galleryUrl}
-                          alt={`Ulozena galerie ${index + 1}`}
+                          alt={`Uložená galerie ${index + 1}`}
                           className="h-28 w-full rounded-lg object-cover"
                         />
                         <Button
@@ -519,13 +519,13 @@ export function TripForm({ mode, tripId }: TripFormProps) {
 
               {galleryPreviewUrls.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Nahled novych souboru</p>
+                  <p className="text-sm font-medium">Náhled nových souborů</p>
                   <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                     {galleryPreviewUrls.map((previewUrl, index) => (
                       <img
                         key={`${previewUrl}-${index}`}
                         src={previewUrl}
-                        alt={`Nahled galerie ${index + 1}`}
+                        alt={`Náhled galerie ${index + 1}`}
                         className="h-28 w-full rounded-lg object-cover"
                       />
                     ))}
@@ -540,7 +540,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             name="content"
             render={({ field }) => (
               <div>
-                <p className="mb-2 text-sm font-medium">Content</p>
+                <p className="mb-2 text-sm font-medium text-slate-900">Obsah</p>
                 <RichTextEditor value={field.value} onChange={field.onChange} />
                 {errors.content?.message ? (
                   <p className="mt-2 text-xs text-danger">{errors.content.message}</p>
@@ -550,7 +550,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
           />
 
           <Input
-            label="Publish Date"
+            label="Datum publikace"
             type="datetime-local"
             {...register("publishDate")}
             isInvalid={Boolean(errors.publishDate)}
@@ -562,7 +562,7 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             name="published"
             render={({ field }) => (
               <Switch isSelected={field.value} onValueChange={field.onChange}>
-                Publikovano
+                Publikováno
               </Switch>
             )}
           />
@@ -571,12 +571,18 @@ export function TripForm({ mode, tripId }: TripFormProps) {
             <Button
               color="primary"
               type="submit"
+              className="bg-blue-600 text-white transition-all duration-200 ease-in-out hover:bg-blue-700"
               isLoading={isSubmitting || saveMutation.isPending}
             >
-              Ulozit
+              Uložit
             </Button>
-            <Button as={Link} href="/dashboard/trips" variant="flat">
-              Zrusit
+            <Button
+              as={Link}
+              href="/dashboard/trips"
+              variant="flat"
+              className="border border-gray-200 bg-white text-slate-700 transition-all duration-200 ease-in-out hover:bg-slate-50"
+            >
+              Zrušit
             </Button>
           </div>
         </form>

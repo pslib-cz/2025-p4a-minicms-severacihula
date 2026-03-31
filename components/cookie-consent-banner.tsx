@@ -44,7 +44,7 @@ export function CookieConsentBanner() {
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-300 bg-white/95 p-4 shadow-lg backdrop-blur">
           <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-slate-700">
-              Tato aplikace pouziva analyticke cookies pro mereni navstevnosti.
+              Tato aplikace používá analytické cookies pro měření návštěvnosti.
             </p>
             <div className="flex gap-2">
               <button
@@ -52,14 +52,14 @@ export function CookieConsentBanner() {
                 className="rounded border border-slate-300 px-4 py-2 text-sm text-slate-700"
                 onClick={() => updateChoice("rejected")}
               >
-                Odmitnout
+                Odmítnout
               </button>
               <button
                 type="button"
                 className="rounded bg-slate-900 px-4 py-2 text-sm text-white"
                 onClick={() => updateChoice("accepted")}
               >
-                Prijmout vse
+                Přijmout vše
               </button>
             </div>
           </div>

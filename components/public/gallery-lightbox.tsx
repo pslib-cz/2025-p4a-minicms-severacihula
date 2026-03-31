@@ -75,15 +75,15 @@ export function GalleryLightbox({ images, title = "Galerie" }: GalleryLightboxPr
   }
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-2xl font-semibold">{title}</h2>
+    <section className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         {validImages.map((imageUrl, index) => (
           <button
             key={`${imageUrl}-${index}`}
             type="button"
-            className="overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-800"
+            className="overflow-hidden rounded-xl border border-slate-200 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600"
             onClick={() => setActiveIndex(index)}
           >
             <img
@@ -100,7 +100,7 @@ export function GalleryLightbox({ images, title = "Galerie" }: GalleryLightboxPr
           <button
             type="button"
             onClick={close}
-            className="absolute right-4 top-4 rounded bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/20"
+            className="absolute right-4 top-4 rounded-lg bg-white/10 px-3 py-2 text-sm text-white transition-all duration-200 ease-in-out hover:bg-white/20"
           >
             X
           </button>
@@ -108,9 +108,9 @@ export function GalleryLightbox({ images, title = "Galerie" }: GalleryLightboxPr
           <button
             type="button"
             onClick={showPrevious}
-            className="absolute left-4 rounded bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+            className="absolute left-4 rounded-lg bg-white/10 px-3 py-2 text-white transition-all duration-200 ease-in-out hover:bg-white/20"
           >
-            Prev
+            Předchozí
           </button>
 
           <img
@@ -122,9 +122,9 @@ export function GalleryLightbox({ images, title = "Galerie" }: GalleryLightboxPr
           <button
             type="button"
             onClick={showNext}
-            className="absolute right-4 rounded bg-white/10 px-3 py-2 text-white hover:bg-white/20"
+            className="absolute right-4 rounded-lg bg-white/10 px-3 py-2 text-white transition-all duration-200 ease-in-out hover:bg-white/20"
           >
-            Next
+            Další
           </button>
         </div>
       ) : null}

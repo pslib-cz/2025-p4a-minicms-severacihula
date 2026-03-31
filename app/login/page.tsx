@@ -25,7 +25,7 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (!result || result.error) {
-      setError("Neplatny e-mail nebo heslo.");
+      setError("Neplatný e-mail nebo heslo.");
       return;
     }
 
@@ -35,9 +35,9 @@ export default function LoginPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md items-center px-6">
       <form className="w-full space-y-4" onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-semibold">Prihlaseni</h1>
+        <h1 className="text-2xl font-semibold">Přihlášení</h1>
         <p className="text-sm text-slate-600">
-          Testovaci ucet: anna@example.com / test1234
+          Testovací účet: anna@example.com / test1234
         </p>
 
         <div>
@@ -75,14 +75,14 @@ export default function LoginPage() {
           disabled={isSubmitting}
           className="w-full rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-50"
         >
-          {isSubmitting ? "Prihlasuji..." : "Prihlasit se"}
+          {isSubmitting ? "Přihlašuji..." : "Přihlásit se"}
         </button>
     
         <Link
           href="/register"
           className="mt-4 block text-center text-sm text-gray-600 hover:underline"
         >
-          Nemate ucet? Zaregistrovat se
+          Nemáte účet? Zaregistrovat se
         </Link>
       </form>
     </main>

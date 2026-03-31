@@ -17,7 +17,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     editorProps: {
       attributes: {
         class:
-          "tiptap rounded-medium border border-slate-300 bg-white px-3 py-2 text-sm",
+          "tiptap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition-all duration-200 ease-in-out focus:ring-2 focus:ring-blue-600",
       },
     },
     onUpdate: ({ editor: nextEditor }) => {
@@ -41,6 +41,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         <Button
           size="sm"
           variant={editor.isActive("bold") ? "solid" : "flat"}
+          className="transition-all duration-200 ease-in-out"
           onPress={() => editor.chain().focus().toggleBold().run()}
         >
           Bold
@@ -48,6 +49,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         <Button
           size="sm"
           variant={editor.isActive("italic") ? "solid" : "flat"}
+          className="transition-all duration-200 ease-in-out"
           onPress={() => editor.chain().focus().toggleItalic().run()}
         >
           Italic
@@ -55,6 +57,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         <Button
           size="sm"
           variant={editor.isActive("bulletList") ? "solid" : "flat"}
+          className="transition-all duration-200 ease-in-out"
           onPress={() => editor.chain().focus().toggleBulletList().run()}
         >
           Odrasky

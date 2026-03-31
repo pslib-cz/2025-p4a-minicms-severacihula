@@ -5,8 +5,8 @@ import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cestovatelsky denik",
-  description: "Publikacni aplikace pro sdileni cestovatelskych zazitku",
+  title: "Cestovatelský deník",
+  description: "Publikační aplikace pro sdílení cestovatelských zážitků",
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="cs">
-      <body>
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
         <AppProviders>
           <SiteHeader />
           {children}

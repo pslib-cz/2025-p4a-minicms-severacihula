@@ -30,18 +30,18 @@ export default function RegisterPage() {
 
       if (!response.ok) {
         if (response.status === 409) {
-          setError("Email already in use");
+          setError("E-mail je již používán");
         } else if (response.status === 400) {
-          setError("Please fill all fields correctly.");
+          setError("Vyplňte prosím všechna pole správně.");
         } else {
-          setError(payload?.error ?? "Registration failed. Please try again.");
+          setError(payload?.error ?? "Registrace selhala. Zkuste to prosím znovu.");
         }
         return;
       }
 
       window.location.href = "/login";
     } catch {
-      setError("Registration failed. Please try again.");
+        setError("Registrace selhala. Zkuste to prosím znovu.");
     } finally {
       setIsSubmitting(false);
     }
@@ -50,12 +50,12 @@ export default function RegisterPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md items-center px-6">
       <form className="w-full space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm" onSubmit={handleSubmit}>
-        <h1 className="text-2xl font-semibold">Create Account</h1>
-        <p className="text-sm text-slate-600">Register a new account to start creating trips.</p>
+        <h1 className="text-2xl font-semibold">Vytvořit účet</h1>
+        <p className="text-sm text-slate-600">Zaregistruj nový účet a začni vytvářet cestopisy.</p>
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="name">
-            Name
+            Jméno
           </label>
           <input
             id="name"
@@ -69,7 +69,7 @@ export default function RegisterPage() {
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="email">
-            Email
+            E-mail
           </label>
           <input
             id="email"
@@ -83,7 +83,7 @@ export default function RegisterPage() {
 
         <div>
           <label className="mb-1 block text-sm font-medium" htmlFor="password">
-            Password
+            Heslo
           </label>
           <input
             id="password"
@@ -103,13 +103,13 @@ export default function RegisterPage() {
           disabled={isSubmitting}
           className="w-full rounded bg-slate-900 px-4 py-2 text-white disabled:opacity-50"
         >
-          {isSubmitting ? "Creating account..." : "Register"}
+          {isSubmitting ? "Vytvářím účet..." : "Registrovat"}
         </button>
 
         <p className="text-sm text-slate-600">
-          Already have an account?{" "}
+          Už máš účet?{" "}
           <Link className="font-medium text-slate-900 underline" href="/login">
-            Sign in
+            Přihlásit se
           </Link>
         </p>
       </form>

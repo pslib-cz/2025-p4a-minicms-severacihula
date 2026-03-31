@@ -97,11 +97,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   ).sort((leftTag, rightTag) => leftTag.name.localeCompare(rightTag.name, "cs"));
 
   return (
-    <main className="mx-auto max-w-6xl space-y-6 p-6">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold">Cestovatelsky denik</h1>
-        <p className="text-slate-600">
-          Verejne publikovane clanky z cest. Filtruj podle stitku.
+    <main className="mx-auto max-w-6xl space-y-8 px-6 py-8 md:py-10">
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Cestovatelský deník</h1>
+        <p className="mt-2 max-w-2xl text-slate-600">
+          Veřejně publikované články z cest. Filtruj podle štítku.
         </p>
       </section>
 
@@ -111,24 +111,29 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {!hasDatabaseUrl ? (
-          <p className="text-sm text-slate-600">
-            Databaze neni nakonfigurovana. Nastav DATABASE_URL pro nacteni obsahu.
+          <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">
+            Databáze není nakonfigurovaná. Nastav DATABASE_URL pro načtení obsahu.
           </p>
         ) : null}
         {trips.map((trip) => (
-          <Card key={trip.id} as={Link} href={`/${trip.slug}`} className="hover:shadow-md">
-            <CardHeader className="pb-0">
+          <Card
+            key={trip.id}
+            as={Link}
+            href={`/${trip.slug}`}
+            className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg"
+          >
+            <CardHeader className="pb-1">
               <div>
-                <h2 className="text-lg font-semibold">{trip.title}</h2>
+                <h2 className="text-lg font-semibold text-slate-900">{trip.title}</h2>
                 <p className="text-xs text-slate-500">
-                  {new Date(trip.publishDate).toLocaleDateString("cs-CZ")} · {trip.author.name ?? "Neznamy autor"}
+                  {new Date(trip.publishDate).toLocaleDateString("cs-CZ")} · {trip.author.name ?? "Neznámý autor"}
                 </p>
               </div>
             </CardHeader>
-            <CardBody className="space-y-3">
+            <CardBody className="space-y-4">
               <div className="relative h-40 w-full overflow-hidden rounded-xl">
                 <Image
-                  alt={`Nahled cesty: ${trip.title}`}
+                  alt={`Náhled cesty: ${trip.title}`}
                   src={resolveCardImageUrl(readMainImageUrl(trip))}
                   fill
                   unoptimized
@@ -137,10 +142,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                   priority={false}
                 />
               </div>
-              <p className="line-clamp-3 text-sm text-slate-700">{trip.description}</p>
+              <p className="line-clamp-3 text-sm leading-6 text-slate-600">{trip.description}</p>
               <div className="flex flex-wrap gap-2">
                 {trip.tags.map((tripTag) => (
-                  <Chip key={tripTag.id} size="sm" variant="flat">
+                  <Chip key={tripTag.id} size="sm" variant="flat" className="text-slate-700">
                     {tripTag.name}
                   </Chip>
                 ))}

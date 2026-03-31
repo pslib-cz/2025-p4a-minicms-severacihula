@@ -32,11 +32,11 @@ export async function uploadImagesAction(formData: FormData): Promise<{ urls: st
 
   for (const file of files) {
     if (!file.type.startsWith("image/")) {
-      throw new Error("Nahravat lze pouze soubory typu obrazek.");
+      throw new Error("Nahrávat lze pouze soubory typu obrázek.");
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      throw new Error("Maximalni velikost jednoho obrazku je 4 MB.");
+      throw new Error("Maximální velikost jednoho obrázku je 4 MB.");
     }
 
     const extension = file.name.includes(".") ? file.name.split(".").pop() ?? "jpg" : "jpg";
@@ -57,7 +57,7 @@ export async function deleteBlobImage(url: string): Promise<{ deleted: boolean }
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    throw new Error("Neautorizovany pristup ke smazani souboru.");
+    throw new Error("Neautorizovaný přístup ke smazání souboru.");
   }
 
   try {

@@ -76,8 +76,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: TripDetailPageProps): Promise<Metadata> {
   if (!hasDatabaseUrl()) {
     return {
-      title: "Cestovatelsky denik",
-      description: "Publikovane cestovatelske clanky.",
+      title: "Cestovatelský deník",
+      description: "Publikované cestovatelské články.",
     };
   }
 
@@ -97,15 +97,15 @@ export async function generateMetadata({ params }: TripDetailPageProps): Promise
     });
   } catch {
     return {
-      title: "Cestovatelsky denik",
-      description: "Publikovane cestovatelske clanky.",
+      title: "Cestovatelský deník",
+      description: "Publikované cestovatelské články.",
     };
   }
 
   if (!trip) {
     return {
-      title: "Clanek nenalezen",
-      description: "Pozadovany cestovatelsky denik nebyl nalezen.",
+      title: "Článek nenalezen",
+      description: "Požadovaný cestovatelský deník nebyl nalezen.",
     };
   }
 
@@ -118,7 +118,7 @@ export async function generateMetadata({ params }: TripDetailPageProps): Promise
             url: mainImageUrl,
             width: 1600,
             height: 900,
-            alt: `Nahled clanku ${trip.title}`,
+            alt: `Náhled článku ${trip.title}`,
           },
         ]
       : undefined;
@@ -172,22 +172,22 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
   const galleryImageUrls = readGalleryImageUrls(trip);
 
   return (
-    <main className="mx-auto max-w-4xl space-y-6 p-6">
-      <header className="space-y-3">
+    <main className="mx-auto max-w-4xl space-y-8 px-6 py-8 md:py-10">
+      <header className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <Link
           href="/"
-          className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="inline-flex items-center text-sm font-medium text-slate-600 transition-all duration-200 ease-in-out hover:text-blue-700"
         >
-          &larr; Zpet na clanky
+          &larr; Zpět na články
         </Link>
-        <h1 className="text-3xl font-bold">{trip.title}</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">{trip.title}</h1>
         <p className="text-sm text-slate-500">
-          {new Date(trip.publishDate).toLocaleDateString("cs-CZ")} · {trip.author.name ?? "Neznamy autor"}
+          {new Date(trip.publishDate).toLocaleDateString("cs-CZ")} · {trip.author.name ?? "Neznámý autor"}
         </p>
-        <p className="text-lg text-slate-700">{trip.description}</p>
+        <p className="text-lg leading-8 text-slate-600">{trip.description}</p>
         <div className="flex flex-wrap gap-2">
           {trip.tags.map((tag) => (
-            <Chip key={tag.id} size="sm" variant="flat">
+            <Chip key={tag.id} size="sm" variant="flat" className="text-slate-700">
               {tag.name}
             </Chip>
           ))}
@@ -195,7 +195,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
       </header>
 
       {heroImage && isValidImageUrl(heroImage) ? (
-        <section>
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
           <img
             src={heroImage}
             alt={trip.title}
@@ -205,7 +205,7 @@ export default async function TripDetailPage({ params }: TripDetailPageProps) {
       ) : null}
 
       <article
-        className="prose prose-slate max-w-none"
+        className="prose prose-slate max-w-none rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
         dangerouslySetInnerHTML={{ __html: trip.content }}
       />
 

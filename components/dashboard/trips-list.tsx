@@ -33,7 +33,7 @@ const PAGE_SIZE = 5;
 const fetchTrips = async () => {
   const response = await fetch("/api/trips");
   if (!response.ok) {
-    throw new Error("Nepodarilo se nacist cesty.");
+    throw new Error("Nepodařilo se načíst cesty.");
   }
   return (await response.json()) as Trip[];
 };
@@ -52,15 +52,15 @@ export function TripsList() {
       const response = await fetch(`/api/trips/${id}`, { method: "DELETE" });
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Mazani selhalo.");
+        throw new Error(payload?.error ?? "Mazání selhalo.");
       }
     },
     onSuccess: () => {
-      toast.success("Cesta byla smazana.");
+      toast.success("Cesta byla smazána.");
       queryClient.invalidateQueries({ queryKey: ["trips"] });
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Mazani selhalo.");
+      toast.error(error.message || "Mazání selhalo.");
     },
   });
 
@@ -74,27 +74,27 @@ export function TripsList() {
 
   if (tripsQuery.isLoading) {
     return (
-      <div className="flex items-center gap-2 py-8">
+      <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-8 text-slate-600 shadow-sm">
         <Spinner size="sm" />
-        <span>Nacitam cesty...</span>
+        <span>Načítám cesty...</span>
       </div>
     );
   }
 
   if (tripsQuery.isError) {
-    return <p className="text-danger">Nepodarilo se nacist seznam cest.</p>;
+    return <p className="text-danger">Nepodařilo se načíst seznam cest.</p>;
   }
 
   return (
-    <div className="space-y-4">
-      <Table aria-label="Seznam cestovatelskych deniku">
+    <div className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <Table aria-label="Seznam cestovatelských deníků" className="rounded-xl">
         <TableHeader>
-          <TableColumn>Nazev</TableColumn>
+          <TableColumn>Název</TableColumn>
           <TableColumn>Datum publikace</TableColumn>
           <TableColumn>Status</TableColumn>
           <TableColumn>Akce</TableColumn>
         </TableHeader>
-        <TableBody emptyContent="Zatim nemas zadne cesty.">
+        <TableBody emptyContent="Zatím nemáš žádné cesty.">
           {pagedTrips.map((trip) => (
             <TableRow key={trip.id}>
               <TableCell>{trip.title}</TableCell>
@@ -103,7 +103,7 @@ export function TripsList() {
               </TableCell>
               <TableCell>
                 <Chip color={trip.published ? "success" : "warning"} variant="flat">
-                  {trip.published ? "Publikovano" : "Draft"}
+                  {trip.published ? "Publikováno" : "Koncept"}
                 </Chip>
               </TableCell>
               <TableCell>
@@ -113,6 +113,7 @@ export function TripsList() {
                     href={`/dashboard/trips/${trip.id}/edit`}
                     size="sm"
                     variant="flat"
+                    className="transition-all duration-200 ease-in-out hover:bg-blue-50 hover:text-blue-700"
                   >
                     Editovat
                   </Button>
@@ -120,6 +121,7 @@ export function TripsList() {
                     size="sm"
                     color="danger"
                     variant="light"
+                    className="transition-all duration-200 ease-in-out"
                     isLoading={deleteMutation.isPending}
                     onPress={() => deleteMutation.mutate(trip.id)}
                   >
